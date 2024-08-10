@@ -2,12 +2,17 @@ package br.com.projeto.api.controle;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.projeto.api.modelo.Cliente;
 import br.com.projeto.api.modelo.Pessoa;
 import br.com.projeto.api.repositorio.Repositorio;
+import br.com.projeto.api.servico.Servico;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,8 +20,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
+
 @RestController
 public class Controle {
+
+    @Autowired
+    private Servico servico;
     
     @Autowired
     private Repositorio acao;
@@ -37,14 +46,13 @@ public class Controle {
     }    
    
     @PostMapping("/api")
-    public Pessoa cadastrar(@RequestBody Pessoa p){
-        return acao.save(p);
-    }
-    
+    public ResponseEntity<?> cadastrar(@RequestBody Pessoa p){
+        return servico.cadastrar(p);
+    }    
     
     @GetMapping("/api")
-    public List<Pessoa> selecionar(){
-        return acao.findAll();
+    public ResponseEntity<?> selecionar(){
+        return servico.selecionar();
     }
     
     @GetMapping("/api/{id}")
@@ -53,19 +61,18 @@ public class Controle {
     }  
 
     @PutMapping("/api")
-    public Pessoa editar(@RequestBody Pessoa p){
-        return acao.save(p);
+    public ResponseEntity<?> editar(@RequestBody Pessoa p){
+        return servico.editar(p);
     }
  
     @DeleteMapping("/api/{id}")
-    public void remover(@PathVariable int id){
-        Pessoa p = acao.findById(id);
-        acao.delete(p);
+    public ResponseEntity<?> remover(@PathVariable int id){
+        return servico.remover(id);
     }
 
     @GetMapping("/api/contador")
-    public long contador(){
-        return acao.count();
+    public ResponseEntity<?> contador(){
+        return servico.contador();
     }
         
     @GetMapping("/api/ordenarNomes")
@@ -98,4 +105,24 @@ public class Controle {
         return acao.findByNomeEndsWith(termo);
     }
 
+    @GetMapping("/api/somaIdade")
+    public int somaIdade(){
+        return acao.somaIdade();
+    }
+
+    @GetMapping("/api/pessoasIdadeIgualMaior")
+    public List<Pessoa> pessoasIdadeIgualMaior(){
+        return acao.idadeIgualMaior(50);
+    }
+
+    @GetMapping("/status")
+    public ResponseEntity<?> status() {
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+    
+    @PostMapping("/cliente")
+    public void cliente(@Valid @RequestBody Cliente cliente) {
+        
+    }
+    
 }
